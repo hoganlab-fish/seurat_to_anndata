@@ -1,0 +1,215 @@
+---
+title: "Convert Seurat to Matrix files for AnnData"
+subtitle: "Uses all assays by default"
+author: "Tyrone Chen, Hujun Yu"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    highlight: textmate
+    keep_md: TRUE
+    number_sections: TRUE
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+editor_options: 
+  chunk_output_type: console
+params:
+  config: "run_config.json"
+---
+
+<a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="MIT License">
+</a>
+
+<a href="https://creativecommons.org/licenses/by/4.0/">
+    <img src="https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg?style=for-the-badge" alt="CC BY 4.0">
+</a>
+
+<a href="https://github.com/hoganlab-fish/tumour_angiogenic_enhancer">
+    <img src="https://img.shields.io/badge/GitHub-hoganlab--fish%2Ftumour_angiogenic_enhancer-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+</a>
+
+<a href="https://github.com/PMCC-BioinformaticsCore">
+    <img src="https://img.shields.io/badge/GitHub-PMCC--BioinformaticsCore%2F?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+</a>
+
+<a href="https://biomedicalsciences.unimelb.edu.au/sbs-research-groups/anatomy-and-physiology-research/stem-cell-and-developmental-biology/hogan-laboratory-vascular-developmental-genetics-and-cell-biology">
+    <img src="https://img.shields.io/badge/Website-hoganlab-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website">
+</a>
+
+<a href="https://www.petermac.org/research/research-technologies/bioinformatics">
+    <img src="https://img.shields.io/badge/Website-hoganlab-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website">
+</a>
+
+Copyright © 2026 <a href="https://orcid.org/0000-0002-9207-0385">Tyrone Chen <img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" width="16" height="16" /></a>, <a href="https://orcid.org/0000-0003-3746-0695">Oliver Yu <img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" width="16" height="16" /></a>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo=TRUE,
+    progress=TRUE,
+    verbose=TRUE,
+    message=FALSE, 
+    warning=FALSE
+    )
+```
+
+# Overview
+
+We cannot convert the `Seurat` data object into an `anndata` object automatically. So we manually extract the data in each layer of the **RNA** assay.
+
+## To generate this file
+
+You will need the environment specified in `code/README.md`.
+
+- `R` libraries: `Matrix qs2 Seurat Signac`
+- `Python` libraries: `anndata numpy pandas scipy`
+
+```{bash class.source="fold-show", label="cmd_arg", eval=FALSE}
+Rscript -e "rmarkdown::render(
+    'seurat_to_matrix.Rmd', 
+    'html_document', 
+    params=list(config='run_config.json')
+)"
+```
+
+# Setup
+## Load libraries
+
+We load libraries associated with standard scRNA-Seq preprocessing. This allows us to read and export the relevant data.
+
+```{r class.source="fold-hide", label="libraries"}
+libraries <<- c("jsonlite", "Matrix", "qs2", "Seurat", "Signac")
+
+options(future.globals.maxSize = 8000 * 1024^2)
+
+load_packages <- function(packages) {
+    suppressPackageStartupMessages({
+        cat(paste("Loading", packages, sep=" "), sep="\n")
+        invisible(sapply(
+            packages, library, character.only = TRUE, quietly = TRUE
+            ))
+    })
+}
+load_packages(libraries)
+```
+
+## Load configuration
+
+Load configuration file. This gets updated and passed to python in the end:
+
+```{r class.source="fold-hide", label="load_config"}
+cfg <- fromJSON(params$config)
+```
+
+## Load input and output file paths
+
+Setup input/output file paths and directories:
+
+```{r class.source="fold-hide", label="setup_input"}
+infile <- cfg$infile
+outdir <- cfg$outdir
+
+if (!dir.exists(outdir)) {
+    dir.create(outdir, recursive=TRUE)
+}
+
+if (grepl("\\.qs2$", infile)) {
+    data <- qs_read(infile)
+} else {
+    data <- readRDS(infile)
+}
+print(data)
+```
+
+## Detect data
+
+Detect assays and metadata:
+
+```{r class.source="fold-hide", label="detect_config"}
+# detect assays and write back to config
+cfg$assays <- Assays(data)
+cfg$scvi$detected <- any(
+    grepl("scvi", names(data@reductions), ignore.case=TRUE)
+)
+write(toJSON(cfg, pretty=TRUE, auto_unbox=TRUE), params$config)
+```
+
+## Export data
+
+Tries to detect gene activity data if present. Can be specified in configs manually.
+
+```{r class.source="fold-hide", label="export_data"}
+# rest unchanged — outdir is now from cfg
+write.csv(data@meta.data, file.path(outdir, "metadata.csv"))
+writeLines(colnames(data), file.path(outdir, "barcodes.txt"))
+
+for (assay in Assays(data)) {
+    writeLines(
+        rownames(data[[assay]]), 
+        file.path(outdir, paste0(assay, "_features.txt"))
+    )
+    for (layer in Layers(data, assay=assay)) {
+        layer_data <- LayerData(data, assay=assay, layer=layer)
+        if (!inherits(layer_data, "sparseMatrix")) {
+            layer_data <- as(layer_data, "CsparseMatrix")
+        }
+        writeMM(
+            layer_data, file.path(
+                outdir, paste0(assay, "_", layer, ".mtx")
+            )
+        )
+    }
+}
+
+# detect gene activity candidates and add to config
+rna_features <- rownames(data[["RNA"]])
+gene_activity_candidates <- c()
+
+for (assay in Assays(data)) {
+    if (assay == "RNA") next
+    for (layer in Layers(data, assay=assay)) {
+        assay_features <- rownames(data[[assay]])
+        if (length(assay_features) == length(rna_features) && 
+            all(assay_features == rna_features)) {
+            key <- paste0(assay, "_", layer)
+            gene_activity_candidates <- c(gene_activity_candidates, key)
+            cat(sprintf("  Gene activity candidate: %s\n", key))
+        }
+    }
+}
+
+if (is.null(cfg$gene_activity)) {
+    cfg$gene_activity <- as.list(gene_activity_candidates)
+}
+
+write(toJSON(cfg, pretty=TRUE, auto_unbox=TRUE), params$config)
+
+for (reduction in names(data@reductions)) {
+    write.csv(
+        Embeddings(data, reduction),
+        file.path(outdir, paste0(reduction, ".csv"))
+    )
+}
+```
+
+## Maintain a record of exported files
+
+```{r class.source="fold-hide", label="outfile_paths"}
+data.frame(sapply(list.files(outdir), tools::md5sum, USE.NAMES=FALSE))
+```
+
+## Session info and timestamp
+
+```{r class.source="fold-hide", label="session_info"}
+sessionInfo()
+date()
+```
+
+## Original command line input
+
+```{r, class.source="fold-hide", label="cmd_args", echo=FALSE, comment=""}
+cat("Command used:\n")
+str(commandArgs(trailingOnly = FALSE), sep = "\n")
+```
