@@ -10,6 +10,10 @@
     <img src="https://img.shields.io/badge/GitHub%2Fhoganlab--fish-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
 </a>
 
+<a href="https://github.com/hoganlab-fish/seurat_to_anndata/pkgs/container/seurat_to_anndata/756409278?tag=main">
+    <img src="https://img.shields.io/badge/docker-257bd6?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Pulls">
+</a>
+
 <a href="https://biomedicalsciences.unimelb.edu.au/sbs-research-groups/anatomy-and-physiology-research/stem-cell-and-developmental-biology/hogan-laboratory-vascular-developmental-genetics-and-cell-biology">
     <img src="https://img.shields.io/badge/Website-hoganlab-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website">
 </a>
@@ -24,9 +28,17 @@ Code in this repository is provided under a [MIT license](https://opensource.org
 
 ## Similar packages
 
-- `anndataR` - ```Deconinck L, Zappia L, Cannoodt R, Morgan M, scverse core, Virshup I, Sang-aram C, Bredikhin D, Seurinck R, Saeys Y (2025). anndataR improves interoperability between R and Python in single-cell transcriptomics. bioRxiv, 2025.08.18.669052. doi:10.1101/2025.08.18.669052.``` as an alternative. [Analogous (and faster) step here](https://bioconductor.org/packages//release/bioc/vignettes/anndataR/inst/doc/usage_seurat.html#writing-a-seurat-object-to-a-h5ad-file).
-- `SeuratWrappers` - [https://github.com/satijalab/seurat-wrappers](https://github.com/satijalab/seurat-wrappers) . Only extracts the first 5000 features.
-- `zellkonverter` - ```Zappia L, Lun A (2025). zellkonverter: Conversion Between scRNA-seq Objects. doi:10.18129/B9.bioc.zellkonverter, R package version 1.20.1, https://bioconductor.org/packages/zellkonverter.``` Uses foreign function interfaces.
+`anndataR` as an alternative. [Analogous (and faster) step here](https://bioconductor.org/packages//release/bioc/vignettes/anndataR/inst/doc/usage_seurat.html#writing-a-seurat-object-to-a-h5ad-file):
+
+```Deconinck L, Zappia L, Cannoodt R, Morgan M, scverse core, Virshup I, Sang-aram C, Bredikhin D, Seurinck R, Saeys Y (2025). anndataR improves interoperability between R and Python in single-cell transcriptomics. bioRxiv, 2025.08.18.669052. doi:10.1101/2025.08.18.669052.``` 
+
+`SeuratWrappers`, only extracts the first 5000 features.
+
+[https://github.com/satijalab/seurat-wrappers](https://github.com/satijalab/seurat-wrappers). 
+
+`zellkonverter` uses foreign function interfaces (talks to both `R` and `python` using `reticulate` and `conda`).
+
+```Zappia L, Lun A (2025). zellkonverter: Conversion Between scRNA-seq Objects. doi:10.18129/B9.bioc.zellkonverter, R package version 1.20.1, https://bioconductor.org/packages/zellkonverter.```
 
 ## Quickstart
 
@@ -50,21 +62,20 @@ Runtime scales with the number and size of assays and layers in your `Seurat` ob
 
 Tested only on `linux red hat enterprise 9.6`.
 
-### Less pain
+### Quick install
 
 #### Singularity image
 
 ```
-docker run ghcr.io/yourname/repo infile.qs2 outdir/
-singularity run docker://ghcr.io/yourname/repo infile.qs2 outdir/
-
+docker run ghcr.io/hoganlab-fish/seurat_to_anndata infile.qs2 outdir/
+singularity run docker://ghcr.io/hoganlab-fish/seurat_to_anndata infile.qs2 outdir/
 ```
 
 #### Command line package
 
 *Coming soon*
 
-### More pain
+### Manual install
 
 #### Python
 

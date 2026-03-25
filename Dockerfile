@@ -1,6 +1,6 @@
 FROM rocker/r-ver:4.5.1
 
-LABEL description="seurat_to_anndata: Convert Seurat objects to AnnData"
+LABEL org.opencontainers.image.description "seurat_to_anndata: Convert Seurat objects to AnnData"
 
 # System dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
