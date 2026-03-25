@@ -54,7 +54,11 @@ Tested only on `linux red hat enterprise 9.6`.
 
 #### Singularity image
 
-*Coming soon*
+```
+docker run ghcr.io/yourname/repo infile.qs2 outdir/
+singularity run docker://ghcr.io/yourname/repo infile.qs2 outdir/
+
+```
 
 #### Command line package
 
@@ -81,6 +85,7 @@ Install through `conda` or `install.packages`. Tested on `R >= 4`.
 jsonlite
 Matrix
 qs2
+rmarkdown
 Seurat
 Signac
 ```
