@@ -10,6 +10,8 @@ if [ "$#" -lt 2 ] || [ "$#" -gt 4 ] ; then
     exit 1
 fi
 
+mkdir -p ${2}
+
 # generate config
 python make_config.py \
     ${1} \

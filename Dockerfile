@@ -12,6 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglpk-dev \
     libjpeg-dev \
     libpng-dev \
+    libxt-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    liblzma-dev \    
     python3 \
     python3-pip \
     python3-dev \
@@ -30,13 +34,12 @@ RUN pip3 install --no-cache-dir \
 
 # R packages
 RUN Rscript -e "\
-    install.packages(c('jsonlite', 'Matrix', 'rmarkdown'), \
+    options(Ncpus = parallel::detectCores()); \
+    install.packages(c('jsonlite', 'Matrix', 'rmarkdown', 'qs2', 'Seurat', 'BiocManager'), \
         repos = 'https://cloud.r-project.org'); \
-    install.packages('BiocManager', repos = 'https://cloud.r-project.org'); \
     BiocManager::install(ask = FALSE); \
-    install.packages('qs2', repos = 'https://cloud.r-project.org'); \
-    install.packages('Seurat', repos = 'https://cloud.r-project.org'); \
-    BiocManager::install('Signac', ask = FALSE) \
+    setRepositories(ind = 1:3); \
+    install.packages('Signac', repos = 'https://cloud.r-project.org'); \
     "
 
 # Copy scripts
