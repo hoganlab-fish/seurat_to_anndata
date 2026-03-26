@@ -30,7 +30,8 @@ RUN micromamba install -y -n base -c conda-forge -c bioconda \
     && micromamba clean --all --yes
 
 # not available for ARM chips sadly
-RUN Rscript -e "install.packages('qs2', repos='https://cloud.r-project.org')"
+RUN micromamba run -n base \
+    Rscript -e "install.packages('qs2', repos='https://cloud.r-project.org')"
 
 # Copy scripts
 ENV PATH="/opt/conda/bin:/app:$PATH"
