@@ -8,6 +8,8 @@ LABEL org.opencontainers.image.description "seurat_to_anndata: Convert Seurat ob
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     pandoc \
+    g++ \
+    make \
     libgfortran5 \
     libgomp1 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -20,13 +22,15 @@ RUN micromamba install -y -n base -c conda-forge -c bioconda \
     r-jsonlite \
     r-matrix \
     r-rmarkdown \
-    r-qs2 \
     python=3.12 \
     anndata \
     pandas \
     scanpy \
     scipy \
     && micromamba clean --all --yes
+
+# not available for ARM chips sadly
+RUN Rscript -e "install.packages('qs2', repos='https://cloud.r-project.org')"
 
 # Copy scripts
 ENV PATH="/opt/conda/bin:/app:$PATH"
