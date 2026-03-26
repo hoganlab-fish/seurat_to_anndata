@@ -76,8 +76,6 @@ jobs:
           # Use the Linux compiler to bundle the specific platform slice.
           # For 'macos-arm', it pulls the 'linux/arm64' Docker layer.
           ./dockerc \
-            --username ${{ github.actor }} \
-            --password ${{ secrets.GITHUB_TOKEN }} \
             -i "docker://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" \
             --platform "${{ matrix.platform }}" \
             -o "s2a-${{ matrix.suffix }}"
