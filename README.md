@@ -30,7 +30,9 @@ Code in this repository is provided under a [MIT license](https://opensource.org
 
 `anndataR` as an alternative. [Analogous (and faster) step here](https://bioconductor.org/packages//release/bioc/vignettes/anndataR/inst/doc/usage_seurat.html#writing-a-seurat-object-to-a-h5ad-file):
 
-```Deconinck L, Zappia L, Cannoodt R, Morgan M, scverse core, Virshup I, Sang-aram C, Bredikhin D, Seurinck R, Saeys Y (2025). anndataR improves interoperability between R and Python in single-cell transcriptomics. bioRxiv, 2025.08.18.669052. doi:10.1101/2025.08.18.669052.``` 
+```
+Deconinck L, Zappia L, Cannoodt R, Morgan M, scverse core, Virshup I, Sang-aram C, Bredikhin D, Seurinck R, Saeys Y (2025). anndataR improves interoperability between R and Python in single-cell transcriptomics. bioRxiv, 2025.08.18.669052. doi:10.1101/2025.08.18.669052.
+``` 
 
 `SeuratWrappers`, only extracts the first 5000 features.
 
@@ -38,7 +40,9 @@ Code in this repository is provided under a [MIT license](https://opensource.org
 
 `zellkonverter` uses foreign function interfaces (talks to both `R` and `python` using `reticulate` and `conda`).
 
-```Zappia L, Lun A (2025). zellkonverter: Conversion Between scRNA-seq Objects. doi:10.18129/B9.bioc.zellkonverter, R package version 1.20.1, https://bioconductor.org/packages/zellkonverter.```
+```
+Zappia L, Lun A (2025). zellkonverter: Conversion Between scRNA-seq Objects. doi:10.18129/B9.bioc.zellkonverter, R package version 1.20.1, https://bioconductor.org/packages/zellkonverter.
+```
 
 ## Quickstart
 
