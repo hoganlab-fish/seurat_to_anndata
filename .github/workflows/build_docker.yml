@@ -61,7 +61,7 @@ jobs:
             target: dockerc_x86-64-gnu
             suffix: linux-x64
           - os: macos-latest   # Apple Silicon (ARM)
-            target: docker_aarch64
+            target: dockerc_aarch64
             suffix: macos-arm
     runs-on: ${{ matrix.os }}
     steps:
