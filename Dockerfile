@@ -8,6 +8,8 @@ LABEL org.opencontainers.image.description "seurat_to_anndata: Convert Seurat ob
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     pandoc \
+    libgfortran5 \
+    libgomp1 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # get all pre-compiled binaries
