@@ -52,38 +52,41 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # STEP 2: Create standalone binaries via dockerc
   bundle-binaries:
     needs: build-image
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-          - platform: linux/amd64
+          - os: ubuntu-latest  # Intel Linux
+            target: x86-64-gnu
             suffix: linux-x64
-          - platform: linux/arm64
+          - os: macos-latest   # Apple Silicon (ARM)
+            target: aarch64-macos
             suffix: macos-arm
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Download Linux x86_64 Compiler
+      - name: Download Architecture-Specific dockerc
         run: |
-          # We ALWAYS download the x86-64-gnu version because it is the only 
-          # one that can run on the GitHub Ubuntu runner.
-          wget "https://github.com/NilsIrl/dockerc/releases/download/v0.3.2/dockerc_x86-64-gnu" -O dockerc
+          wget "https://github.com{{ matrix.target }}" -O dockerc
           chmod +x dockerc
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Compile Binary
         run: |
-          # Use the Linux compiler to bundle the specific platform slice.
-          # For 'macos-arm', it pulls the 'linux/arm64' Docker layer.
+          # Since we are running on the native OS, dockerc will 
+          # automatically pull the correct image slice (ARM on Mac, Intel on Linux)
           ./dockerc \
-            -i "docker://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" \
-            --platform "${{ matrix.platform }}" \
+            -i "docker://ghcr.io/hoganlab-fish/seurat_to_anndata:latest" \
             -o "s2a-${{ matrix.suffix }}"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          # Unique artifact name for the GitHub UI
           name: "s2a-binary-${{ matrix.suffix }}"
-          # Path must match the '-o' filename from the Compile step
           path: "s2a-${{ matrix.suffix }}"
