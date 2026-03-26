@@ -58,18 +58,17 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest  # Intel Linux
-            target: x86-64-gnu
+            target: dockerc_x86-64-gnu
             suffix: linux-x64
           - os: macos-latest   # Apple Silicon (ARM)
-            target: aarch64-macos
+            target: docker_aarch64
             suffix: macos-arm
     runs-on: ${{ matrix.os }}
     steps:
       - name: Download Architecture-Specific dockerc
         run: |
-          wget "https://github.com{{ matrix.target }}" -O dockerc
+          wget "https://github.com/NilsIrl/dockerc/releases/download/v0.3.2/{{ matrix.target }}" -O dockerc
           chmod +x dockerc
-
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
