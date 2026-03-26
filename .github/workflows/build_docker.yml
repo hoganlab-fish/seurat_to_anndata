@@ -59,26 +59,33 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: x86-64-gnu  # Standard Linux (Clusters)
+          - platform: linux/amd64
             suffix: linux-x64
-          - target: aarch64-macos # Apple Silicon (M1/M2/M3)
+          - platform: linux/arm64
             suffix: macos-arm
     steps:
-      - name: Download dockerc
+      - name: Download Linux x86_64 Compiler
         run: |
-          wget https://github.com{{ matrix.target }}
-          chmod +x dockerc_${{ matrix.target }}
+          # We ALWAYS download the x86-64-gnu version because it is the only 
+          # one that can run on the GitHub Ubuntu runner.
+          wget "https://github.com/NilsIrl/dockerc/releases/download/v0.3.2/dockerc_x86-64-gnu" -O dockerc
+          chmod +x dockerc
 
       - name: Compile Binary
         run: |
-          ./dockerc_${{ matrix.target }} \
+          # Use the Linux compiler to bundle the specific platform slice.
+          # For 'macos-arm', it pulls the 'linux/arm64' Docker layer.
+          ./dockerc \
             --username ${{ github.actor }} \
             --password ${{ secrets.GITHUB_TOKEN }} \
-            -i docker://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
-            -o s2a-${{ matrix.suffix }}
+            -i "docker://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" \
+            --platform "${{ matrix.platform }}" \
+            -o "s2a-${{ matrix.suffix }}"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: s2a-${{ matrix.suffix }}
-          path: s2a-${{ matrix.suffix }}
+          # Unique artifact name for the GitHub UI
+          name: "s2a-binary-${{ matrix.suffix }}"
+          # Path must match the '-o' filename from the Compile step
+          path: "s2a-${{ matrix.suffix }}"
