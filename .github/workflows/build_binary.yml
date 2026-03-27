@@ -9,7 +9,7 @@ on:
 
 jobs:
   bundle-binaries:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only run if first workflow succeeded
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only run if first workflow succeeded
     strategy:
       matrix:
         include:
