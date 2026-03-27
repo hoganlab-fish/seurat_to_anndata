@@ -1,10 +1,10 @@
 name: Build Binary
 
 on:
-  workflow_run:
-    workflows: ["Build and Push Image"]
-    branches: [main, master]
-    types: [completed]
+  # workflow_run:
+  #   workflows: ["Build and Push Image"]
+  #   branches: [main, master]
+  #   types: [completed]
   workflow_dispatch:
 
 jobs:
