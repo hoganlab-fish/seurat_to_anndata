@@ -50,10 +50,14 @@ jobs:
           ls -lh s2a-${{ matrix.suffix }}
           pwd
 
+      - name: Get Latest Tag
+        id: get-latest-tag
+        uses: actions-ecosystem/action-get-latest-tag@v1
+
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.vars.outputs.tag }}
+          tag_name: ${{ steps.get-latest-tag.outputs.tag }}
           files: "s2a-${{ matrix.suffix }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
