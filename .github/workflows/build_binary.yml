@@ -16,9 +16,9 @@ jobs:
           - os: ubuntu-latest
             target: dockerc_x86-64-gnu
             suffix: linux-x64
-          - os: macos-latest
-            target: dockerc_aarch64
-            suffix: macos-arm
+          # - os: macos-latest
+          #   target: dockerc_aarch64
+          #   suffix: macos-arm
 
     runs-on: ${{ matrix.os }}
     steps:
