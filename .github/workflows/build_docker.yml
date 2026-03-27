@@ -66,8 +66,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set up Docker
-        uses: docker/setup-docker-action@v3
-            
+        uses: docker/setup-buildx-action@v3
+
       - name: Download Architecture-Specific dockerc
         run: |
           wget "https://github.com/NilsIrl/dockerc/releases/download/v0.3.2/${{ matrix.target }}" -O dockerc
