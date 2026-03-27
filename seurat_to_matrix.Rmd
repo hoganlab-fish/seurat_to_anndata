@@ -111,6 +111,10 @@ Setup input/output file paths and directories:
 infile <- cfg$infile
 outdir <- cfg$outdir
 
+print(getwd())
+print(list.files())
+print(file.exists(infile))
+
 if (!dir.exists(outdir)) {
     dir.create(outdir, recursive=TRUE)
 }
