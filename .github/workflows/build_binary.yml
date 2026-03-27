@@ -1,4 +1,4 @@
-name: Build docker
+name: Build Binary
 
 on:
   workflow_run:
