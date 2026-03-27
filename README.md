@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/badge/GitHub%2Fhoganlab--fish-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
 </a>
 
-<a href="https://github.com/hoganlab-fish/seurat_to_anndata/pkgs/container/seurat_to_anndata/756409278?tag=main">
+<a href="https://github.com/hoganlab-fish/seurat_to_anndata/pkgs/container/seurat_to_anndata">
     <img src="https://img.shields.io/badge/docker-257bd6?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Pulls">
 </a>
 
