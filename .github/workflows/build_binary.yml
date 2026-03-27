@@ -46,7 +46,7 @@ jobs:
             -o "s2a-${{ matrix.suffix }}"
 
       - name: Upload to GitHub Release
-        uses: [softprops/action-gh-release](https://github.com/softprops/action-gh-release)@v2
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')  # Only runs if you pushed a tag
         with:
           files: "s2a-${{ matrix.suffix }}"
